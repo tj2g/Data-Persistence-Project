@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainManager : MonoBehaviour
 {
@@ -12,20 +13,30 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+
     private bool m_Started = false;
     private int m_Points;
-    
+
     private bool m_GameOver = false;
 
-    
+    private string playerName;
+    private int bestScore;
+    public TextMeshProUGUI bestScoreText;
+
+
+    public void Awake()
+    {
+        playerName = PlayerPrefs.GetString("PlayerName", "");
+        bestScore = PlayerPrefs.GetInt("HighScore", 0);
+        bestScoreText.text = "Best Score: " + PlayerPrefs.GetString("HighScorePlayerName", playerName) + " : " + bestScore.ToString();
+    }
     // Start is called before the first frame update
     void Start()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
+
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -59,6 +70,10 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            else if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(0);
+            }
         }
     }
 
@@ -71,6 +86,22 @@ public class MainManager : MonoBehaviour
     public void GameOver()
     {
         m_GameOver = true;
+        HighScoreCalculator();
         GameOverText.SetActive(true);
+    }
+
+    private void HighScoreCalculator()
+    {
+        int highScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (m_Points > highScore)
+        {
+            PlayerPrefs.SetInt("HighScore", m_Points);
+            PlayerPrefs.SetString("HighScorePlayerName", playerName);
+        }
+    }
+
+    public void SetHighScoreText()
+    {
+        
     }
 }
