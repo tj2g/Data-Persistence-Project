@@ -23,12 +23,11 @@ public class MainManager : MonoBehaviour
     private int bestScore;
     public TextMeshProUGUI bestScoreText;
 
-
     public void Awake()
     {
-        playerName = PlayerPrefs.GetString("PlayerName", "");
-        bestScore = PlayerPrefs.GetInt("HighScore", 0);
-        bestScoreText.text = "Best Score: " + PlayerPrefs.GetString("HighScorePlayerName", playerName) + " : " + bestScore.ToString();
+        playerName = PlayerPrefs.GetString("CurrentPlayerName", "");
+        bestScore = PlayerPrefs.GetInt("HighScore1", 0);
+        bestScoreText.text = "Best Score: " + PlayerPrefs.GetString("HighScorePlayerName1", playerName) + " : " + bestScore.ToString();
     }
     // Start is called before the first frame update
     void Start()
@@ -91,17 +90,22 @@ public class MainManager : MonoBehaviour
     }
 
     private void HighScoreCalculator()
-    {
-        int highScore = PlayerPrefs.GetInt("HighScore", 0);
-        if (m_Points > highScore)
+    {for (int i = 1; i < 11; i++)
         {
-            PlayerPrefs.SetInt("HighScore", m_Points);
-            PlayerPrefs.SetString("HighScorePlayerName", playerName);
+            Debug.Log(i);
+            int currentHighScore = PlayerPrefs.GetInt("HighScore" + i, 0);
+            if (m_Points > currentHighScore)
+            {
+                for(int x = 10; x >= i; x--)
+                {
+                    Debug.Log(x + " : " + i);
+                    PlayerPrefs.SetInt("HighScore" + x, PlayerPrefs.GetInt("HighScore" + (x-1), 0));
+                    PlayerPrefs.SetString("HighScorePlayerName" + x, PlayerPrefs.GetString("HighScorePlayerName" + (x-1), ""));
+                }
+                PlayerPrefs.SetInt("HighScore" + i, m_Points);
+                PlayerPrefs.SetString("HighScorePlayerName" + i, PlayerPrefs.GetString("CurrentPlayerName", ""));
+                break;
+            }
         }
-    }
-
-    public void SetHighScoreText()
-    {
-        
     }
 }
